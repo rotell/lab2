@@ -1,3 +1,3 @@
-# oop2024
+# lab2
 
 MEW MEW I'm NIAY STUDENT
