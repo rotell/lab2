@@ -5,33 +5,36 @@
 using std::cin;
 using std::cout;
 using std::endl;
+using std::uint8_t;
 
-Domino::Domino(int l, int r) : left(l), right(r) {
+Domino::Domino(uint8_t l, uint8_t r) : left(l), right(r) {
     if (l < 0 || l > 6 || r < 0 || r > 6) {
         throw std::invalid_argument("Values should be between 0 and 6");
     }
 }
 
 Domino Domino::generateRandomDomino() {
-    return {rand() % 7, rand() % 7};
+    static std::mt19937 gen(static_cast<unsigned>(std::time(nullptr))); /**< Инициализация генератора времени */
+    static std::uniform_int_distribution<> dist(0, 6); /**< Интервал от 0 до 6 */
+    return {static_cast<uint8_t>(dist(gen)), static_cast<uint8_t>(dist(gen))};
 }
 
-int Domino::getLeft() const {
+uint8_t Domino::getLeft() const {
     return left;
 }
 
-int Domino::getRight() const {
+uint8_t Domino::getRight() const {
     return right;
 }
 
-void Domino::setLeft(int l) {
+void Domino::setLeft(uint8_t l) {
     if (l < 0 || l > 6) {
         throw std::invalid_argument("Left value should be between 0 and 6");
     }
     left = l;
 }
 
-void Domino::setRight(int r) {
+void Domino::setRight(uint8_t r) {
     if (r < 0 || r > 6) {
         throw std::invalid_argument("Right value should be between 0 and 6");
     }
@@ -62,19 +65,22 @@ Domino& Domino::operator=(const Domino& other) {
 }
 
 std::istream& operator>>(std::istream& in, Domino& d) {
-    in >> d.left >> d.right;
-    if (d.left < 0 || d.left > 6 || d.right < 0 || d.right > 6) {
+    int left, right;
+    in >> left >> right;
+    if (left < 0 || left > 6 || right < 0 || right > 6) {
         throw std::invalid_argument("Values should be between 0 and 6");
     }
+    d.setLeft(static_cast<uint8_t>(left));
+    d.setRight(static_cast<uint8_t>(right));
     return in;
 }
 
 std::ostream& operator<<(std::ostream& out, const Domino& d) {
-    out << "(" << d.left << "|" << d.right << ")";
+    out << "(" << static_cast<int>(d.getLeft()) << "|" << static_cast<int>(d.getRight()) << ")";
     return out;
 }
 
-void Domino::printHalf(int value) {
+void Domino::printHalf(uint8_t value) {
     cout << "| ";
     printLine(value, 1);
     cout << " |" << endl;
@@ -88,7 +94,7 @@ void Domino::printHalf(int value) {
     cout << " |" << endl;
 }
 
-void Domino::printLine(int value, int line) {
+void Domino::printLine(uint8_t value, int line) {
     switch (value) {
         case 0:
             cout << "     ";

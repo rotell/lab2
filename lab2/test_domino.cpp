@@ -46,15 +46,15 @@ TEST(DominoTest, OutputOperator) {
     Domino d(3, 6);
     std::stringstream out;
     out << d;
-    EXPECT_EQ(out.str(), "(3|6)");
+    EXPECT_EQ(out.str(), "(3|6)") << "Expected output is (3|6), but got: " << out.str();
 }
 
 TEST(DominoTest, InputOperator) {
     Domino d;
     std::stringstream input("4 2");
     input >> d;
-    EXPECT_EQ(d.getLeft(), 4);
-    EXPECT_EQ(d.getRight(), 2);
+    EXPECT_EQ(d.getLeft(), 4) << "Expected left value to be 4, but got: " << d.getLeft();
+    EXPECT_EQ(d.getRight(), 2) << "Expected right value to be 2, but got: " << d.getRight();
 }
 
 TEST(DominoGroupTest, CreateRandomGroup) {
@@ -63,9 +63,19 @@ TEST(DominoGroupTest, CreateRandomGroup) {
 }
 
 TEST(DominoGroupTest, GenerateFullSet) {
-    DominoGroup fullSet = DominoGroup::generateFullSet(1);
+    DominoGroup fullSet = DominoGroup::generateFullSet();
+
     EXPECT_EQ(fullSet.size(), 28);
+
+    for (size_t i = 0; i < fullSet.size(); i++) {
+        for (size_t j = i + 1; j < fullSet.size(); j++) {
+            const Domino& d1 = fullSet[i];
+            const Domino& d2 = fullSet[j];
+            EXPECT_FALSE(d1 == d2) << "Duplicate domino found: (" << d1.getLeft() << "|" << d1.getRight() << ")";
+        }
+    }
 }
+
 
 TEST(DominoGroupTest, AddDomino) {
     DominoGroup group;
@@ -112,19 +122,25 @@ TEST(DominoGroupTest, SortDominoes) {
     group.sortDominoes();
 
     EXPECT_EQ(group[0].getLeft(), 1);
+    EXPECT_EQ(group[0].getRight(), 1);
+    EXPECT_EQ(group[1].getLeft(), 3);
+    EXPECT_EQ(group[1].getRight(), 2);
     EXPECT_EQ(group[2].getLeft(), 5);
+    EXPECT_EQ(group[2].getRight(), 6);
 }
 
 TEST(DominoGroupTest, GetSubGroup) {
     DominoGroup group;
-    group += Domino(1, 5);
     group += Domino(5, 6);
-    group += Domino(2, 3);
+    group += Domino(1, 1);
+    group += Domino(3, 2);
 
-    DominoGroup subgroup = group.getSubGroup(5);
+    DominoGroup subgroup = group.getSubGroup(1);
 
-    EXPECT_EQ(subgroup.size(), 2);
-    EXPECT_EQ(group.size(), 1);
+    EXPECT_EQ(subgroup.size(), 1);
+    EXPECT_EQ(subgroup[0].getLeft(), 1);
+    EXPECT_EQ(subgroup[0].getRight(), 1);
+    EXPECT_EQ(group.size(), 2);
 }
 
 TEST(DominoGroupTest, AssignmentOperator) {
